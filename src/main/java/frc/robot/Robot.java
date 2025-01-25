@@ -8,6 +8,7 @@ import frc.robot.subsystems.LimelightSubsystem;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
@@ -46,13 +47,9 @@ public class Robot extends TimedRobot
     private final MecanumDriveKinematics mecanumDriveKinematics = 
         new MecanumDriveKinematics(frontLeftLocation, frontRightLocation, rearLeftLocation, rearRightLocation);
 
-    /* FIX THIS SYNTAX
-    MecanumDriveOdometry mecanumDriveOdometry = new MecanumDriveOdometry(mecanumDriveKinematics, 1.0, 
-        new MecanumDriveWheelPositions(1.0, 
-                                        1.0, 
-                                        1.0, 
-                                        1.0));
-    */
+   
+    
+    
 
 
 
@@ -75,7 +72,12 @@ public class Robot extends TimedRobot
         
         robotDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
 
-       
+        MecanumDriveOdometry mecanumDriveOdometry = 
+        new MecanumDriveOdometry(mecanumDriveKinematics, new Rotation2d(gyro.getAngle()), 
+            new MecanumDriveWheelPositions(frontLeftLocation.getNorm(), 
+                                            frontRightLocation.getNorm(), 
+                                            rearLeftLocation.getNorm(), 
+                                            rearRightLocation.getNorm()));
     }
 
     @Override
