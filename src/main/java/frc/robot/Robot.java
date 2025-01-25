@@ -13,6 +13,7 @@ public class Robot extends TimedRobot
 
     private Joystick gamepad;
     private Drivetrain drivetrain;
+    private boolean autoDrive = false;
 
     @Override
     public void robotInit()
@@ -26,24 +27,27 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        double forward = gamepad.getY();
-        double strafe = -gamepad.getX();
-        double rotation = -gamepad.getRawAxis(2);
-
-        drivetrain.drive(forward, strafe, rotation);
-
+        
+        drive(true);
+        
     }
 
-    private void drive(boolean fieldRelative, Joystick gamepad, Drivetrain mecanum)
+    private void drive(boolean fieldRelative)
     {
 
         double xSpeed = gamepad.getY();
         double ySpeed = -gamepad.getX();
         double rot = -gamepad.getRawAxis(2);
 
-        // while the A-button is pressed, overwrite some of the driving values with the output of our limelight methods
-        if (gamepad.getTrigger())
+        // while the Trigger is pressed, overwrite some of the driving values with the output of our limelight methods
+        if (gamepad.getTrigger() && autoDrive == false)
         {
+            autoDrive = true;
+        }
+        if (gamepad.getTrigger() && autoDrive == true) {
+            autoDrive = false;
+        }
+        if (autoDrive) {
             final double rot_limelight = limelight_aim_proportional();
             rot = rot_limelight;
 
@@ -54,7 +58,7 @@ public class Robot extends TimedRobot
             fieldRelative = false;
         }
 
-        mecanum.drive(xSpeed, ySpeed, rot);
+        drivetrain.drive(xSpeed, ySpeed, rot);
     }
 
     // simple proportional turning control with Limelight.
@@ -74,6 +78,8 @@ public class Robot extends TimedRobot
         // your limelight 3 feed, tx should return roughly 31 degrees.
         double targetingAngularVelocity = -LimelightHelpers.getTX("limelight") * kP;
 
+        targetingAngularVelocity *= Drivetrain.kMaxAngularSpeed;
+
         return targetingAngularVelocity;
     }
 
@@ -84,8 +90,9 @@ public class Robot extends TimedRobot
     double limelight_range_proportional()
     {
         double kP = .1;
-        
+
         double targetingForwardSpeed = -LimelightHelpers.getTY("limelight") * kP;
+        targetingForwardSpeed *= Drivetrain.kMaxSpeed;
 
         return targetingForwardSpeed;
     }
