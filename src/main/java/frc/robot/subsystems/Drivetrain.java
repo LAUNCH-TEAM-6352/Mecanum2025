@@ -4,108 +4,54 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.Constants.DriveTrainConstants.DriveTrainKeys;
 
-public class Drivetrain extends SubsystemBase {
-  
-  PWMSparkMax rearLeft = new PWMSparkMax(Constants.DriveTrainConstants.rearLeftMotor);
-  PWMSparkMax rearRight = new PWMSparkMax(Constants.DriveTrainConstants.rearRightMotor);
-  PWMSparkMax frontRight = new PWMSparkMax(Constants.DriveTrainConstants.frontRightMotor);
-  PWMSparkMax frontLeft = new PWMSparkMax(Constants.DriveTrainConstants.frontLeftMotor);
+public class Drivetrain extends SubsystemBase
+{
+
+  public MecanumDrive mecanumDrive;
+
+  public PWMSparkMax rearLeft;
+  public PWMSparkMax rearRight;
+  public PWMSparkMax frontRight;
+  public PWMSparkMax frontLeft;
+
+  public static final double kMaxSpeed = 3.0; // 3 meters per second
+  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   /** Creates a new Drivetrain. */
-  public Drivetrain() 
+  public Drivetrain()
   {
-  
-    
+    rearLeft = new PWMSparkMax(DriveTrainConstants.rearLeftMotor);
+    rearRight = new PWMSparkMax(DriveTrainConstants.rearRightMotor);
+    frontRight = new PWMSparkMax(DriveTrainConstants.frontRightMotor);
+    frontLeft = new PWMSparkMax(DriveTrainConstants.frontLeftMotor);
+
+    rearLeft.setInverted(DriveTrainConstants.areLeftMotorsInverted);
+    frontLeft.setInverted(DriveTrainConstants.areLeftMotorsInverted);
 
   }
 
-  public void drive(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower)
+  public void drive(double forward, double strafe, double rotation)
   {
-    // Normalize motor powers
-    double maxPower = Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(frontRightPower),
-            Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
 
-    if (maxPower > 1) {
-        frontLeftPower /= maxPower;
-        frontRightPower /= maxPower;
-        backLeftPower /= maxPower;
-        backRightPower /= maxPower;
-    }
+    mecanumDrive.driveCartesian(forward, strafe, rotation);
 
-    // Set motor powers
-    frontLeft.set(frontLeftPower);
-    frontRight.set(frontRightPower);
-    rearLeft.set(backLeftPower);
-    rearRight.set(backRightPower);
-  }
-
-  public void reverse(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower)
-  {
-    // Normalize motor powers
-    double minPower = Math.min(Math.abs(frontLeftPower), Math.max(Math.abs(frontRightPower),
-            Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
-
-    if (minPower < 1) {
-        frontLeftPower /= minPower;
-        frontRightPower /= minPower;
-        backLeftPower /= minPower;
-        backRightPower /= minPower;
-    }
-
-    // Set motor powers
-    frontLeft.set(frontLeftPower);
-    frontRight.set(frontRightPower);
-    rearLeft.set(backLeftPower);
-    rearRight.set(backRightPower);
-  }
-  
-  public void strafeRight(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower)
-  {
-    // Normalize motor powers
-    double maxPower = Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(frontRightPower),
-            Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
-
-    if (maxPower < 1) {
-        frontLeftPower /= maxPower;
-        frontRightPower /= maxPower;
-        backLeftPower /= maxPower;
-        backRightPower /= maxPower;
-    }
-
-    // Set motor powers
-    frontLeft.set(frontLeftPower);
-    frontRight.set(-frontRightPower);
-    rearLeft.set(-backLeftPower);
-    rearRight.set(backRightPower);
-  }  
-  
-  public void strafeLeft(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower)
-  {
-      // Normalize motor powers
-    double maxPower = Math.max(Math.abs(frontLeftPower), Math.max(Math.abs(frontRightPower),
-            Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
-
-    if (maxPower < 1) {
-        frontLeftPower /= maxPower;
-        frontRightPower /= maxPower;
-        backLeftPower /= maxPower;
-        backRightPower /= maxPower;
-    }
-
-    // Set motor powers
-    frontLeft.set(-frontLeftPower);
-    frontRight.set(frontRightPower);
-    rearLeft.set(backLeftPower);
-    rearRight.set(-backRightPower);
   }
 
   @Override
-  public void periodic() {
+  public void periodic()
+  {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber(DriveTrainKeys.frontLeftMotorPwr, frontLeft.get());
+    SmartDashboard.putNumber(DriveTrainKeys.frontRightMotorPwr, frontRight.get());
+    SmartDashboard.putNumber(DriveTrainKeys.rearLeftMotorPwr, rearLeft.get());
+    SmartDashboard.putNumber(DriveTrainKeys.rearRightMotorPwr, rearRight.get());
   }
+
 }

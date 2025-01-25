@@ -27,6 +27,18 @@ public final class Constants
         public static final int frontLeftMotor  = 1;
         public static final int rearRightMotor = 2;
         public static final int rearLeftMotor = 3;
+
+        public static final boolean areLeftMotorsInverted = true;
+
+        public static class DriveTrainKeys
+        {
+
+            public static final String frontRightMotorPwr = "Front Right";
+            public static final String frontLeftMotorPwr = "Front Left";
+            public static final String rearRightMotorPwr = "Rear Right";
+            public static final String rearLeftMotorPwr = "Rear Left";
+
+        }
     }
 
     public static final class LimelightConstants
@@ -36,4 +48,5 @@ public final class Constants
         public static final double TARGET_HEIGHT_INCHES = 2; 
         public static final double CAMERA_PITCH_RADIANS = Math.toRadians(0);
     }
+
 }
