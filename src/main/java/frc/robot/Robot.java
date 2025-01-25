@@ -3,33 +3,59 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
 public class Robot extends TimedRobot
 {
 
     private Joystick gamepad;
-    private Drivetrain drivetrain;
     private boolean autoDrive = false;
+
+    public MecanumDrive robotDrive;
+
+    public PWMSparkMax rearLeft;
+    public PWMSparkMax rearRight;
+    public PWMSparkMax frontRight;
+    public PWMSparkMax frontLeft;
+
+    public static final double kMaxSpeed = 5.0; // 3 meters per second
+    public static final double kMaxAngularSpeed = 2*Math.PI; // 1/2 rotation per second
 
     @Override
     public void robotInit()
     {
 
         gamepad = new Joystick(0);
-        drivetrain = new Drivetrain();
-
+        
+        rearLeft = new PWMSparkMax(DriveTrainConstants.rearLeftMotor);
+        rearRight = new PWMSparkMax(DriveTrainConstants.rearRightMotor);
+        frontRight = new PWMSparkMax(DriveTrainConstants.frontRightMotor);
+        frontLeft = new PWMSparkMax(DriveTrainConstants.frontLeftMotor);
+        
+        rearLeft.setInverted(DriveTrainConstants.areLeftMotorsInverted);
+        frontLeft.setInverted(DriveTrainConstants.areLeftMotorsInverted);
+        
+        robotDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
     }
 
     @Override
     public void teleopPeriodic()
     {
-        
+
         drive(true);
-        
+
+    }
+
+    public void drive(double forward, double strafe, double rotation)
+    {
+  
+      robotDrive.driveCartesian(forward, strafe, rotation);
+  
     }
 
     private void drive(boolean fieldRelative)
@@ -44,10 +70,12 @@ public class Robot extends TimedRobot
         {
             autoDrive = true;
         }
-        if (gamepad.getTrigger() && autoDrive == true) {
+        if (gamepad.getTrigger() && autoDrive == true)
+        {
             autoDrive = false;
         }
-        if (autoDrive) {
+        if (autoDrive)
+        {
             final double rot_limelight = limelight_aim_proportional();
             rot = rot_limelight;
 
@@ -58,7 +86,7 @@ public class Robot extends TimedRobot
             fieldRelative = false;
         }
 
-        drivetrain.drive(xSpeed, ySpeed, rot);
+        drive(xSpeed, ySpeed, rot);
     }
 
     // simple proportional turning control with Limelight.
@@ -78,7 +106,7 @@ public class Robot extends TimedRobot
         // your limelight 3 feed, tx should return roughly 31 degrees.
         double targetingAngularVelocity = -LimelightHelpers.getTX("limelight") * kP;
 
-        targetingAngularVelocity *= Drivetrain.kMaxAngularSpeed;
+        targetingAngularVelocity *= kMaxAngularSpeed;
 
         return targetingAngularVelocity;
     }
@@ -92,7 +120,7 @@ public class Robot extends TimedRobot
         double kP = .1;
 
         double targetingForwardSpeed = -LimelightHelpers.getTY("limelight") * kP;
-        targetingForwardSpeed *= Drivetrain.kMaxSpeed;
+        targetingForwardSpeed *= kMaxSpeed;
 
         return targetingForwardSpeed;
     }
