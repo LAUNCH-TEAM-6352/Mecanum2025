@@ -4,6 +4,7 @@
 package frc.robot;
 
 import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.commands.MoveToTarget;
 import frc.robot.subsystems.LimelightSubsystem;
 
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Robot extends TimedRobot
@@ -88,56 +90,23 @@ public class Robot extends TimedRobot
 
     }
 
+
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+
     // simple proportional turning control with Limelight.
     // "proportional control" is a control algorithm in which the output is proportional to the error.
     // in this case, we are going to return an angular velocity that is proportional to the
     // "tx" value from the Limelight.
-    double limelight_aim_proportional()
-    {
-        // kP (constant of proportionality)
-        // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
-        // if it is too high, the robot will oscillate.
-        // if it is too low, the robot will never reach its target
-        // if the robot never turns in the correct direction, kP should be inverted.
-        double kP = .01;
-
-        // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of
-        // your limelight 3 feed, tx should return roughly 31 degrees.
-        double targetingAngularVelocity = limelightSubsystem.getX() * kP;
-        if (targetingAngularVelocity != 0) {
-            System.out.println("angular velocity" + targetingAngularVelocity);
-        }
-
-        targetingAngularVelocity *= kMaxAngularSpeed;
-        targetingAngularVelocity *= -1.0;
-
-
-        return targetingAngularVelocity;
-    }
-
-    // simple proportional ranging control with Limelight's "ty" value
-    // this works best if your Limelight's mount height and target mount height are different.
-    // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging
-    // rather than "ty"
-    double limelight_range_proportional()
-    {
-        double kP = 1.0;
-
-        double targetingForwardSpeed = LimelightHelpers.getTA("limelight") * kP;
-        if (targetingForwardSpeed != 0) {
-            System.out.println("forward speed" + targetingForwardSpeed);
-        }
-        
-        targetingForwardSpeed *= kMaxSpeed;
-        targetingForwardSpeed *= -1.0;
-        targetingForwardSpeed = 1/targetingForwardSpeed;
-
-        return 0.1;
-    }
 
 
 
     // *** can use getDistanceToTarget to slow down speed when distance is close to the apriltag
+    
+    
+    
     private void drive(boolean fieldRelative)
     {
 
@@ -146,28 +115,12 @@ public class Robot extends TimedRobot
         double rot = -gamepad.getRawAxis(2);
 
         // while the Trigger is pressed, overwrite some of the driving values with the output of our limelight methods
-        
-        if (gamepad.getTriggerPressed() && autoDrive == false)
-        {
-            autoDrive = true;
-        }
-        if (gamepad.getTriggerPressed() && autoDrive == true)
-        {
-            autoDrive = false;
-        }
-        if (autoDrive)
-        {
-            final double rot_limelight = limelight_aim_proportional();
-            rot = rot_limelight;
 
-            final double forward_limelight = limelight_range_proportional();
-            // xSpeed = forward_limelight;
-           //  ySpeed = forward_limelight / Math.tan(-theta)
-
-            // while using Limelight, turn off field-relative driving
-            fieldRelative = false;
+        if (gamepad.getRawButtonPressed(2))
+        {
+            new MoveToTarget(limelightSubsystem, robotDrive).schedule();
         }
-
+    
         robotDrive.driveCartesian(xSpeed, ySpeed, rot);
 
     }

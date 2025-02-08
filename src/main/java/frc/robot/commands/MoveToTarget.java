@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.LimelightSubsystem;
@@ -15,7 +15,9 @@ public class MoveToTarget extends Command
 {
     @SuppressWarnings("unused")
     private final LimelightSubsystem limelightSubsystem;
-    private PIDController limeLightPID;
+    private final MecanumDrive robotDrive;
+    private final PIDController aimPIDController;
+    private final PIDController rangePIDController;
 
     /**
      * Creates a new ExampleCommand.
@@ -23,23 +25,20 @@ public class MoveToTarget extends Command
      * @param subsystem
      *            The subsystem used by this command.
      */
-    public MoveToTarget(LimelightSubsystem subsystem)
+    public MoveToTarget(LimelightSubsystem subsystem, MecanumDrive robotDrive)
     {
-        limelightSubsystem = subsystem;
+        this.limelightSubsystem = subsystem;
+        this.robotDrive = robotDrive;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
 
-        double targetX = 1.0;
+        // Initialize PID controllers
+        aimPIDController = new PIDController(0.001, 0.2, 0);
+        rangePIDController = new PIDController(0, 0, 0);
 
-        if(subsystem.hasTarget()) {
-            double id = subsystem.getTargetID();
-            double y = subsystem.getY();
-            double x = subsystem.getX();
-
-            if(x < targetX){
-                    
-            }
-        }
+        // Set tolerances if needed
+        aimPIDController.setTolerance(2.0);
+        rangePIDController.setTolerance(2.0);
     }
 
     // Called when the command is initially scheduled.
@@ -52,13 +51,28 @@ public class MoveToTarget extends Command
     @Override
     public void execute()
     {
-        
+        if (limelightSubsystem.hasTarget())
+        {
+            double rot = aimPIDController.calculate(limelightSubsystem.getX(), 0);
+            System.out.println(rot);
+            double forward = rangePIDController.calculate(limelightSubsystem.getA(), LimelightSubsystem.targetArea);
+            double strafe = 0.25;
+            if (rot > 0) {
+                strafe *= -1.0;
+            }
+            robotDrive.driveCartesian(forward * -0.2, strafe, rot); // Adjust driving logic as needed
+        }
+        else
+        {
+            robotDrive.driveCartesian(0, 0, 0); // Stop the robot if no target is found
+        }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted)
     {
+        robotDrive.driveCartesian(0, 0, 0); // Stop the robot
     }
 
     // Returns true when the command should end.

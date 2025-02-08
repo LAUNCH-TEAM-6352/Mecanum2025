@@ -10,6 +10,10 @@ import frc.robot.LimelightHelpers;
 public class LimelightSubsystem extends SubsystemBase
 {
 
+    public static final double kMaxSpeed = 0.30; // 3 meters per second
+    public static final double kMaxAngularSpeed = Math.PI/4; // 1/2 rotation per second
+    public static final double targetArea = 40; 
+
     public LimelightSubsystem()
     {
     }
@@ -33,6 +37,29 @@ public class LimelightSubsystem extends SubsystemBase
     {
         return LimelightHelpers.getTY("limelight"); // vertical offset in degrees
     }
+
+    public double getA()
+    {
+        return LimelightHelpers.getTA("limelight"); 
+    }
+
+    /*
+    public double limelight_aim_proportional() {
+        double kP = .01;
+        double tx = getX(); // Assume getTx() retrieves the tx value from the Limelight
+        return kP * tx * kMaxAngularSpeed * -1.0;
+    }
+
+    public double limelight_range_proportional() {
+        double kP = 1.0;
+        double tA = getA();
+        double speedDifferential = targetArea - tA;
+        double speedFactor = speedDifferential / targetArea;
+        double speed = kP * speedFactor * kMaxSpeed * -1.0;
+        System.out.println(speed);
+        return speed; 
+    }
+    */
 
     public double getDistanceToTarget(double cameraHeight, double targetHeight, double cameraPitchRadians)
     {
