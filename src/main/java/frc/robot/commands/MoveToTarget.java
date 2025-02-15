@@ -33,12 +33,15 @@ public class MoveToTarget extends Command
         addRequirements(subsystem);
 
         // Initialize PID controllers
-        aimPIDController = new PIDController(0.001, 0.2, 0);
-        rangePIDController = new PIDController(0, 0, 0);
+        // P = 0.05
+        // I = 0.01
+        // D = 0.02
+        aimPIDController = new PIDController(0.05, 0.02, 0.025);
+        rangePIDController = new PIDController(0.1, 0.01, 0);
 
         // Set tolerances if needed
-        aimPIDController.setTolerance(2.0);
-        rangePIDController.setTolerance(2.0);
+        aimPIDController.setTolerance(1.0);
+        rangePIDController.setTolerance(1.0);
     }
 
     // Called when the command is initially scheduled.
@@ -50,17 +53,23 @@ public class MoveToTarget extends Command
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute()
+
     {
         if (limelightSubsystem.hasTarget())
         {
             double rot = aimPIDController.calculate(limelightSubsystem.getX(), 0);
+            double strafe = rangePIDController.calculate(limelightSubsystem.getA(), LimelightSubsystem.targetArea);
+
             System.out.println(rot);
             double forward = rangePIDController.calculate(limelightSubsystem.getA(), LimelightSubsystem.targetArea);
-            double strafe = 0.25;
+            // double strafe = 0.30;
             if (rot > 0) {
                 strafe *= -1.0;
             }
-            robotDrive.driveCartesian(forward * -0.2, strafe, rot); // Adjust driving logic as needed
+            // strafe *= (limelightSubsystem.getX() < 0) ? -1.0 : 1.0;
+            System.out.println("rot" + rot);
+            System.out.println("strafe" + strafe);
+            robotDrive.driveCartesian(forward * -0.15, strafe * 0.15, rot * 0.3); // Adjust driving logic as needed
         }
         else
         {

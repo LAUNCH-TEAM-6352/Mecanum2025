@@ -10,9 +10,9 @@ import frc.robot.LimelightHelpers;
 public class LimelightSubsystem extends SubsystemBase
 {
 
-    public static final double kMaxSpeed = 0.30; // 3 meters per second
-    public static final double kMaxAngularSpeed = Math.PI/4; // 1/2 rotation per second
-    public static final double targetArea = 40; 
+    public static final double kMaxSpeed = 0.30;
+    public static final double kMaxAngularSpeed = Math.PI * 0.2; 
+    public static final double targetArea = 25; 
 
     public LimelightSubsystem()
     {
