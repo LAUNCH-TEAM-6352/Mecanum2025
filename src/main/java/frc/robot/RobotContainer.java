@@ -52,8 +52,7 @@ public class RobotContainer
                 System.out.println("Target ID: " + limelightSubsystem.getTargetID());
                 double distance = limelightSubsystem.getDistanceToTarget(
                         LimelightConstants.CAMERA_HEIGHT_INCHES, 
-                        LimelightConstants.TARGET_HEIGHT_INCHES, 
-                        LimelightConstants.CAMERA_PITCH_RADIANS);
+                        LimelightConstants.TARGET_HEIGHT_INCHES);
                 System.out.println("Distance to target: " + distance);
             } else {
                 System.out.println("No target detected.");
@@ -71,8 +70,7 @@ public class RobotContainer
             if (limelightSubsystem.hasTarget()) {
                 double distance = limelightSubsystem.getDistanceToTarget(
                         LimelightConstants.CAMERA_HEIGHT_INCHES, 
-                        LimelightConstants.TARGET_HEIGHT_INCHES, 
-                        LimelightConstants.CAMERA_PITCH_RADIANS);
+                        LimelightConstants.TARGET_HEIGHT_INCHES);
                 System.out.println("Autonomous Target Distance: " + distance);
             }
         });

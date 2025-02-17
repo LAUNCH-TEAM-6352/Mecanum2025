@@ -49,20 +49,12 @@ public class Robot extends TimedRobot
     private final MecanumDriveKinematics mecanumDriveKinematics = 
         new MecanumDriveKinematics(frontLeftLocation, frontRightLocation, rearLeftLocation, rearRightLocation);
 
-   
-    
-    
-
-
-
     @Override
     public void robotInit()
     {
 
         gamepad = new Joystick(0);
         limelightSubsystem = new LimelightSubsystem();
-      
-        
 
         rearLeft = new PWMSparkMax(DriveTrainConstants.rearLeftMotor);
         rearRight = new PWMSparkMax(DriveTrainConstants.rearRightMotor);
@@ -96,6 +88,15 @@ public class Robot extends TimedRobot
         CommandScheduler.getInstance().run();
     }
 
+    private double applyDeadband(double value) {
+        double deadband = 0.05;
+        if (Math.abs(value) > deadband) {
+            return value;
+        } else {
+            return 0.0;
+        }
+    }
+
     // simple proportional turning control with Limelight.
     // "proportional control" is a control algorithm in which the output is proportional to the error.
     // in this case, we are going to return an angular velocity that is proportional to the
@@ -109,10 +110,9 @@ public class Robot extends TimedRobot
     
     private void drive(boolean fieldRelative)
     {
-
-        double xSpeed = gamepad.getY();
-        double ySpeed = -gamepad.getX();
-        double rot = -gamepad.getRawAxis(2);
+        double xSpeed = applyDeadband(gamepad.getY());
+        double ySpeed = applyDeadband(-gamepad.getX());
+        double rot = applyDeadband(-gamepad.getRawAxis(2));
 
         // while the Trigger is pressed, overwrite some of the driving values with the output of our limelight methods
 
@@ -120,7 +120,7 @@ public class Robot extends TimedRobot
         {
             new MoveToTarget(limelightSubsystem, robotDrive).schedule();
         }
-    
+        
         robotDrive.driveCartesian(xSpeed, ySpeed, rot);
 
     }

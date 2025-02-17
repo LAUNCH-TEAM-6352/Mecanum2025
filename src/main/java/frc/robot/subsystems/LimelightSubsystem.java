@@ -11,8 +11,8 @@ public class LimelightSubsystem extends SubsystemBase
 {
 
     public static final double kMaxSpeed = 0.30;
-    public static final double kMaxAngularSpeed = Math.PI * 0.2; 
-    public static final double targetArea = 25; 
+    public static final double kMaxAngularSpeed = Math.PI * 0.2;
+    public static final double targetArea = 25;
 
     public LimelightSubsystem()
     {
@@ -40,41 +40,40 @@ public class LimelightSubsystem extends SubsystemBase
 
     public double getA()
     {
-        return LimelightHelpers.getTA("limelight"); 
+        return LimelightHelpers.getTA("limelight");
     }
 
     /*
-    public double limelight_aim_proportional() {
-        double kP = .01;
-        double tx = getX(); // Assume getTx() retrieves the tx value from the Limelight
-        return kP * tx * kMaxAngularSpeed * -1.0;
-    }
+     * public double limelight_aim_proportional() {
+     * double kP = .01;
+     * double tx = getX(); // Assume getTx() retrieves the tx value from the Limelight
+     * return kP * tx * kMaxAngularSpeed * -1.0;
+     * }
+     * 
+     * public double limelight_range_proportional() {
+     * double kP = 1.0;
+     * double tA = getA();
+     * double speedDifferential = targetArea - tA;
+     * double speedFactor = speedDifferential / targetArea;
+     * double speed = kP * speedFactor * kMaxSpeed * -1.0;
+     * System.out.println(speed);
+     * return speed;
+     * }
+     */
 
-    public double limelight_range_proportional() {
-        double kP = 1.0;
-        double tA = getA();
-        double speedDifferential = targetArea - tA;
-        double speedFactor = speedDifferential / targetArea;
-        double speed = kP * speedFactor * kMaxSpeed * -1.0;
-        System.out.println(speed);
-        return speed; 
-    }
-    */
-
-    public double getDistanceToTarget(double cameraHeight, double targetHeight, double cameraPitchRadians)
+    public double getDistanceToTarget(double cameraHeight, double targetHeight)
     {
         if (!hasTarget())
         {
             return 0.0;
         }
-        double targetAngleRadians = Math.toRadians(getY());
         /*
          * basically a rearrangement of tan(0) = opp/adj
          * - 0 is the angle from the camera to the target, considering both internal angle deviations
          * - opp is the difference in height between the camera and the target
          * - adj is the distance from the camera to the target (what we're solving for)
          */
-        return (targetHeight - cameraHeight) / Math.tan(cameraPitchRadians + targetAngleRadians);
+        return (targetHeight - cameraHeight) / Math.tan(getY());
     }
 
     @Override
@@ -88,7 +87,6 @@ public class LimelightSubsystem extends SubsystemBase
             "Distance to Target in meters",
             getDistanceToTarget(
                 LimelightConstants.CAMERA_HEIGHT_INCHES,
-                LimelightConstants.TARGET_HEIGHT_INCHES,
-                LimelightConstants.CAMERA_PITCH_RADIANS));
+                LimelightConstants.TARGET_HEIGHT_INCHES));
     }
 }
