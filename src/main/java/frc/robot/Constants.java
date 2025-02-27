@@ -23,10 +23,34 @@ public final class Constants
 
     public static class DriveTrainConstants
     {
-        public static final int frontRightMotor = 0;
-        public static final int frontLeftMotor  = 1;
-        public static final int rearRightMotor = 2;
-        public static final int rearLeftMotor = 3;
+        public static final int frontRightMotorChannel = 0;
+        public static final int frontLeftMotorChannel  = 1;
+        public static final int rearRightMotorChannel = 2;
+        public static final int rearLeftMotorChannel = 3;
+
+        public static final double maxSpeed = 5.0;
+
+        public static final boolean isLeftMotorInverted = true;
+        public static final boolean isRightMotorInverted = true;
+
+        public static class PIDConstants
+        {
+            public static final double strafekP = 0.0;
+            public static final double strafekI = 0.0;
+            public static final double strafekD = 0.0;
+            public static final double strafeTol = 0.0;
+
+            public static final double forwardkP = 0.0;
+            public static final double forwardkI = 0.0;
+            public static final double forwardkD = 0.0;
+            public static final double forwardTol = 0.0;
+
+            public static final double rotkP = 0.0;
+            public static final double rotkI = 0.0;
+            public static final double rotkD = 0.0;
+            public static final double rotTol = 0.0;
+
+        }
     }
 
     public static final class LimelightConstants

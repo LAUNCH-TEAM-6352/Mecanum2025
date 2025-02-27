@@ -6,45 +6,52 @@ package frc.robot.commands;
 
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LimelightSubsystem;
 
-/** An example command that uses an example subsystem. */
 public class MoveToTarget extends Command
 {
     @SuppressWarnings("unused")
-    private final LimelightSubsystem limelightSubsystem;
-    private PIDController limeLightPID;
+    private final LimelightSubsystem limelight;
+    private final Drivetrain drivetrain;
+    private final PIDController strafePID, forwardPID, rotationPID;
 
-    /**
-     * Creates a new ExampleCommand.
-     *
-     * @param subsystem
-     *            The subsystem used by this command.
-     */
-    public MoveToTarget(LimelightSubsystem subsystem)
+    public MoveToTarget(LimelightSubsystem limelight, Drivetrain drivetrain)
     {
-        limelightSubsystem = subsystem;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        this.limelight = limelight;
+        this.drivetrain = drivetrain;
 
-        double targetX = 1.0;
+        addRequirements(limelight, drivetrain);
 
-        if(subsystem.hasTarget()) {
-            double id = subsystem.getTargetID();
-            double y = subsystem.getY();
-            double x = subsystem.getX();
+        strafePID = new PIDController(DriveTrainConstants.PIDConstants.strafekP,
+                                     DriveTrainConstants.PIDConstants.strafekI,
+                                     DriveTrainConstants.PIDConstants.strafekD);
 
-            if(x < targetX){
-                    
-            }
-        }
+        forwardPID = new PIDController(DriveTrainConstants.PIDConstants.forwardkP,
+                                      DriveTrainConstants.PIDConstants.forwardkI,
+                                      DriveTrainConstants.PIDConstants.forwardkD);
+
+        rotationPID = new PIDController(DriveTrainConstants.PIDConstants.rotkP,
+                                       DriveTrainConstants.PIDConstants.rotkI,
+                                       DriveTrainConstants.PIDConstants.rotkD);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize()
     {
+        strafePID.reset();
+        forwardPID.reset();
+        rotationPID.reset();
+
+        Pose2d botPose = limelight.getPose2d();
+
+        drivetrain.drive(forwardPID.calculate(botPose.getY(), 0.0),
+                         strafePID.calculate(botPose.getX(), 0.0),
+                         rotationPID.calculate(botPose.getRotation().getDegrees(), 0.0));
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -63,6 +70,6 @@ public class MoveToTarget extends Command
     @Override
     public boolean isFinished()
     {
-        return false;
+        return limelight.atTarget();
     }
 }

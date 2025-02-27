@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.LimelightSubsystem;
 
 /**
@@ -25,10 +25,8 @@ public class RobotContainer
 {
     // The robot's subsystems and commands are defined here...
     private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem();
-
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    private final CommandXboxController m_driverController = new CommandXboxController(
-        OperatorConstants.kDriverControllerPort);
+    private final Drivetrain drivetrain = new Drivetrain();
+    private final CommandXboxController gamepad = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
