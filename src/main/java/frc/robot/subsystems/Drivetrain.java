@@ -11,7 +11,6 @@ import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase
 {
-
   public MecanumDrive mecanumDrive;
 
   private final PWMSparkMax rearLeft = new PWMSparkMax(Constants.DriveTrainConstants.rearLeftMotorChannel);
@@ -22,6 +21,11 @@ public class Drivetrain extends SubsystemBase
   /** Creates a new Drivetrain. */
   public Drivetrain()
   {
+    rearLeft.setInverted(Constants.DriveTrainConstants.isLeftMotorInverted);
+    frontLeft.setInverted(Constants.DriveTrainConstants.isLeftMotorInverted);
+    rearRight.setInverted(Constants.DriveTrainConstants.isRightMotorInverted);
+    frontRight.setInverted(Constants.DriveTrainConstants.isRightMotorInverted);
+
     mecanumDrive = new MecanumDrive(frontLeft, rearLeft, frontRight, rearRight);
   }
 

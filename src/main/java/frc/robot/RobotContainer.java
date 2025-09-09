@@ -4,16 +4,22 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.HeadConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.LimelightConstants;
+import frc.robot.commands.DriveWithGamepad;
+import frc.robot.commands.SpinHead;
 
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.Head;
+import frc.robot.subsystems.Key;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,15 +30,20 @@ import frc.robot.subsystems.LimelightSubsystem;
 public class RobotContainer
 {
     // The robot's subsystems and commands are defined here...
-    private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem();
     private final Drivetrain drivetrain = new Drivetrain();
-    private final CommandXboxController gamepad = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    private final Head head = new Head();
+    private final Key key = new Key();
+
+    private final CommandXboxController gamepad = new CommandXboxController(OperatorConstants.driverControllerPort);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer()
     {
         // Configure the trigger bindings
         configureBindings();
+
+        // Configure the dashboard:
+        configureDashboard();
     }
 
     /**
@@ -44,19 +55,21 @@ public class RobotContainer
      * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
      * joysticks}.
      */
-    private void configureBindings() {
-        limelightSubsystem.setDefaultCommand(new RunCommand(() -> {
-            if (limelightSubsystem.hasTarget()) {
-                System.out.println("Target ID: " + limelightSubsystem.getTargetID());
-                double distance = limelightSubsystem.getDistanceToTarget(
-                        LimelightConstants.CAMERA_HEIGHT_INCHES, 
-                        LimelightConstants.TARGET_HEIGHT_INCHES, 
-                        LimelightConstants.CAMERA_PITCH_RADIANS);
-                System.out.println("Distance to target: " + distance);
-            } else {
-                System.out.println("No target detected.");
-            }
-        }, limelightSubsystem));
+    private void configureBindings()
+    {
+        drivetrain.setDefaultCommand(new DriveWithGamepad(drivetrain, gamepad));
+
+        gamepad.rightBumper().whileTrue(new SpinHead(head, DashboardConstants.headCwSpeedKey));
+        gamepad.leftBumper().whileTrue(new SpinHead(head, DashboardConstants.headCcwSpeedKey));
+
+        gamepad.x().onTrue(new InstantCommand(() -> key.startSpin(), key));
+        gamepad.y().onTrue(new InstantCommand(() -> key.stopSpin(), key));
+    }
+
+    private void configureDashboard()
+    {
+        SmartDashboard.setDefaultNumber(DashboardConstants.headCwSpeedKey, HeadConstants.cwSpeedDefault);
+        SmartDashboard.setDefaultNumber(DashboardConstants.headCcwSpeedKey, HeadConstants.ccwSpeedDefault);
     }
 
     /**
@@ -64,15 +77,8 @@ public class RobotContainer
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return new RunCommand(() -> {
-            if (limelightSubsystem.hasTarget()) {
-                double distance = limelightSubsystem.getDistanceToTarget(
-                        LimelightConstants.CAMERA_HEIGHT_INCHES, 
-                        LimelightConstants.TARGET_HEIGHT_INCHES, 
-                        LimelightConstants.CAMERA_PITCH_RADIANS);
-                System.out.println("Autonomous Target Distance: " + distance);
-            }
-        });
+    public Command getAutonomousCommand()
+    {
+        return null;
     }
 }

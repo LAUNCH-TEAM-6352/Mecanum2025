@@ -15,49 +15,43 @@ package frc.robot;
  */
 public final class Constants
 {
-    public static class OperatorConstants
+    public static class DashboardConstants
     {
-        public static final int kDriverControllerPort = 0;
+        public static final String headCwSpeedKey = "headCwSpeed";
+        public static final String headCcwSpeedKey = "headCcwSpeed";
     }
-
 
     public static class DriveTrainConstants
     {
         public static final int frontRightMotorChannel = 0;
-        public static final int frontLeftMotorChannel  = 1;
+        public static final int frontLeftMotorChannel = 1;
         public static final int rearRightMotorChannel = 2;
         public static final int rearLeftMotorChannel = 3;
 
-        public static final double maxSpeed = 5.0;
-
         public static final boolean isLeftMotorInverted = true;
-        public static final boolean isRightMotorInverted = true;
-
-        public static class PIDConstants
-        {
-            public static final double strafekP = 0.0;
-            public static final double strafekI = 0.0;
-            public static final double strafekD = 0.0;
-            public static final double strafeTol = 0.0;
-
-            public static final double forwardkP = 0.0;
-            public static final double forwardkI = 0.0;
-            public static final double forwardkD = 0.0;
-            public static final double forwardTol = 0.0;
-
-            public static final double rotkP = 0.0;
-            public static final double rotkI = 0.0;
-            public static final double rotkD = 0.0;
-            public static final double rotTol = 0.0;
-
-        }
+        public static final boolean isRightMotorInverted = false;
     }
 
-    public static final class LimelightConstants
+    public static class HeadConstants
     {
-        // need to be updated based on measurements
-        public static final double CAMERA_HEIGHT_INCHES = 0; 
-        public static final double TARGET_HEIGHT_INCHES = 2; 
-        public static final double CAMERA_PITCH_RADIANS = Math.toRadians(0);
+        public static final int motorChannel = 4;
+        public static final boolean isMotorInverted = false;
+        public static final double cwSpeedDefault = 0.6;
+        public static final double ccwSpeedDefault = -0.6;
+    }
+
+    public static class KeyConstants
+    {
+        public static final int motorRelayChannel = 5;
+    }
+
+    public static class OperatorConstants
+    {
+        public static final int driverControllerPort = 0;
+
+        // Sensitivity settings for driving
+        public static final double maxForward = 0.8;
+        public static final double maxStrafe = 0.8;
+        public static final double maxRotation = 0.6;
     }
 }
